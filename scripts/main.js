@@ -7,9 +7,9 @@ var mainImage = document.querySelector('img');
 mainImage.onclick = function(){
     var src = mainImage.getAttribute('src');
     if(src === 'images/bumbler.jpeg'){
-        mainImage.setAttribute('src', 'images/bumbler2.jpeg');
+        mainImage.setAttribute('src', 'images/dku.jpg');
     } else {
-        mainImage.setAttribute('src', 'images/bumbler.jpeg');      
+        mainImage.setAttribute('src', 'images/bumbler.jpeg');
     }
 }
 
@@ -19,7 +19,6 @@ var title = document.querySelector('title');
 function setUserName(){
     var name = prompt('What is your name?');
     localStorage.setItem('name', name);
-    title.textContent = 'Bees Welcome ' + name;
 }
 
 if(!localStorage.getItem('name')){
