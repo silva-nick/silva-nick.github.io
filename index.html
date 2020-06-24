@@ -1,35 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
-    <link href="styles/style.css" rel="stylesheet" type="text/css">
-    <link rel="icon" href="images/icon.jpg">
-    <title>HackDKU</title>
+    <meta charset="utf-8" />
+    <link href="styles/app.css" rel="stylesheet" type="text/css" />
+    <title>Boids</title>
+    <script type="application/javascript" src="scripts/main.js"></script>
   </head>
-  <body>
-    <img  src="images/dku_logo.jpg" alt="HackDKU"
-          width="30%"
-          height="30%">
-    <div>
-      <h2>Important Information</h2>
-      <iframe title="PRESS-CITIZEN- Embed Player" width="540" height="350" frameborder="0" scrolling="no" allowfullscreen="true" marginheight="0" marginwidth="0" src="https://uw-media.press-citizen.com/embed/video/654553000?placement=snow-embed"></iframe>
-    <h2>About the Event</h2>
-
-    <h2>FAQ and Other Information</h2>
-        <ul>
-          <li>What to put here?</li>
-          <li>Where to go?</li>
-          <li>Why participate?</li>
-        </ul>
-
-    <h2>Registration and more</h2>
-
-    <h2>People Who Helped the Event</h2>
-    <p><a href="https://www.greenpeace.org/usa/sustainable-agriculture/save-the-bees/">Link to something</a></p>
-      <button>Change User</button>
-    <script src="scripts/main.js"></script>
-
-  </div>
+  <body onload="initialize();">
+    <div class="main">
+      <canvas id="map" width="800" height="800"></canvas>
+    </div>
   </body>
 </html>
