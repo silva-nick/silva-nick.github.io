@@ -294,27 +294,22 @@ listShuffle = (list) => {
 };
 
 var points = new KdTree();
-const numBoids = 320;
-const canvasSize = 800;
+const numBoids = 240;
+const canvasSize = 500;
 
 initialize = () => {
   for (let x = 0; x < numBoids; x++) {
     points.insert(
       new Point(
         Math.random() * canvasSize,
-        Math.random() * canvasSize,
+        Math.random() * canvasSize * 2,
         (Math.random() < 0.5 ? -1 : 1) * Math.random() * 4,
         (Math.random() < 0.5 ? -1 : 1) * Math.random() * 4
       )
     );
   }
+  draw();
 
-  let pointList = points.asList();
-  let canvas = document.getElementById("map");
-  let ctx = canvas.getContext("2d");
-  for (let p of pointList) {
-    drawBoid(ctx, p);
-  }
   // ctx.fillStyle = "rgb(0, 0, 200, 0.5)";
   //p = points.nearest(new Point(0, 0));
   //ctx.fillRect(p.x, p.y, 10, 10);
@@ -340,19 +335,10 @@ drawBoid = (ctx, p) => {
   ctx.stroke();
 };
 
-limit = (point) => {
-  let hyp = Math.hypot(point.x, point.y);
-  if (hyp > 1) {
-    point.x = (1 * point.x) / hyp;
-    point.y = (1 * point.y) / hyp;
-  }
-};
-
 separation = (boid) => {
   let sep = new Point(0, 0, 0, 0);
 
   nearby = points.circleRange(new Circle(boid.x, boid.y, 25));
-  let n = 0;
   for (let other of nearby) {
     if (other !== boid) {
       let dist =
@@ -360,34 +346,31 @@ separation = (boid) => {
         (other.y - boid.y) * (other.y - boid.y);
       sep.x = sep.x + (boid.x - other.x) / dist;
       sep.y = sep.y + (boid.y - other.y) / dist;
-      n++;
     }
   }
-  if (n > 0) {
-    sep.x = sep.x / n;
-    sep.y = sep.y / n;
+  if (nearby.length - 1 > 0) {
+    sep.x = sep.x / (nearby.length - 1);
+    sep.y = sep.y / (nearby.length - 1);
     let hyp = Math.hypot(sep.x, sep.y);
-    sep.x = (sep.x / hyp - boid.xv) / 10;
-    sep.y = (sep.y / hyp - boid.yv) / 10;
-    //limit(sep);
+    sep.x = sep.x / hyp - boid.xv;
+    sep.y = sep.y / hyp - boid.yv;
   }
   return sep;
 };
 
 alignment = (boid) => {
   let align = new Point(0, 0, 0, 0);
-  nearby = points.circleRange(new Circle(boid.x, boid.y, 50));
-  let n = 0;
+  nearby = points.circleRange(new Circle(boid.x, boid.y, 40));
+
   for (let other of nearby) {
     if (other !== boid) {
-      n++;
       align.x += other.xv;
       align.y += other.yv;
     }
   }
-  if (n > 0) {
-    align.x = align.x / n / 8;
-    align.y = align.y / n / 8;
+  if (nearby.length - 1 > 0) {
+    align.x = align.x / (nearby.length - 1);
+    align.y = align.y / (nearby.length - 1);
     let hyp = Math.hypot(align.x, align.y);
     align.x = align.x / hyp - boid.xv;
     align.y = align.y / hyp - boid.yv;
@@ -410,11 +393,8 @@ cohesion = (boid) => {
     coh.x = coh.x / n - boid.x;
     coh.y = coh.y / n - boid.y;
     let hyp = Math.hypot(coh.x, coh.y);
-    coh.x = (coh.x / hyp) * 4 - boid.xv;
-    coh.y = (coh.y / hyp) * 4 - boid.yv;
-
-    coh.x = coh.x / 100;
-    coh.y = coh.y / 100;
+    coh.x = coh.x / hyp - boid.xv;
+    coh.y = coh.y / hyp - boid.yv;
   }
   return coh;
 };
@@ -431,16 +411,16 @@ updateBoids = () => {
     sep = separation(boid);
     //sep = new Point(0, 0, 0, 0);
 
-    boid.xv = boid.xv + sep.x + align.x + coh.x;
-    boid.yv = boid.yv + sep.y + align.y + coh.y;
+    boid.xv = boid.xv + sep.x / 10 + align.x / 2 + coh.x / 80;
+    boid.yv = boid.yv + sep.y / 10 + align.y / 2 + coh.y / 80;
 
-    boid.x = boid.x + boid.xv * 4;
-    boid.y = boid.y + boid.yv * 4;
+    boid.x = boid.x + boid.xv * 3;
+    boid.y = boid.y + boid.yv * 3;
 
-    if (boid.x < 0) boid.x = canvasSize;
-    if (boid.x > canvasSize) boid.x = 0;
-    if (boid.y < 0) boid.y = canvasSize;
-    if (boid.y > canvasSize) boid.y = 0;
+    if (boid.x < 0) boid.xv += 0.2;
+    if (boid.x > canvasSize * 2) boid.xv -= 0.2;
+    if (boid.y < 0) boid.yv += 0.2;
+    if (boid.y > canvasSize) boid.yv -= 0.2;
   }
 
   points = new KdTree();
