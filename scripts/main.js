@@ -434,8 +434,8 @@ updateBoids = () => {
     boid.xv = boid.xv + sep.x + align.x + coh.x;
     boid.yv = boid.yv + sep.y + align.y + coh.y;
 
-    boid.x = boid.x + boid.xv;
-    boid.y = boid.y + boid.yv;
+    boid.x = boid.x + boid.xv * 4;
+    boid.y = boid.y + boid.yv * 4;
 
     if (boid.x < 0) boid.x = canvasSize;
     if (boid.x > canvasSize) boid.x = 0;
