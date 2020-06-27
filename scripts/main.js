@@ -301,8 +301,8 @@ initialize = () => {
   for (let x = 0; x < numBoids; x++) {
     points.insert(
       new Point(
-        Math.random() * canvasSize,
         Math.random() * canvasSize * 2,
+        Math.random() * canvasSize,
         (Math.random() < 0.5 ? -1 : 1) * Math.random() * 4,
         (Math.random() < 0.5 ? -1 : 1) * Math.random() * 4
       )
