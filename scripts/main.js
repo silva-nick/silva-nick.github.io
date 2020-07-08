@@ -296,6 +296,7 @@ listShuffle = (list) => {
 var points = new KdTree();
 const numBoids = 240;
 const canvasSize = 500;
+var frameCount = 0;
 
 initialize = () => {
   for (let x = 0; x < numBoids; x++) {
@@ -402,7 +403,6 @@ cohesion = (boid) => {
 updateBoids = () => {
   let sep, align, coh;
   let pointList = points.asList();
-  listShuffle(pointList);
   for (let boid of pointList) {
     align = alignment(boid);
     //align = new Point(0, 0, 0, 0);
@@ -423,10 +423,15 @@ updateBoids = () => {
     if (boid.y > canvasSize) boid.yv -= 0.2;
   }
 
-  points = new KdTree();
-  for (let boid of pointList) {
-    points.insert(boid);
+  if (frameCount % 2 === 0) {
+    listShuffle(pointList);
+    points = new KdTree();
+    for (let boid of pointList) {
+      points.insert(boid);
+    }
   }
+
+  frameCount++;
 };
 
 (function () {
