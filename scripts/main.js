@@ -7,6 +7,14 @@ class Point {
   }
 }
 
+class AccPoint extends Point {
+  constructor(x, y, xv, yv, xa, ya) {
+    super(x, y, xv, yv);
+    this.xa = xa;
+    this.ya = ya;
+  }
+}
+
 class Rect {
   constructor(xm, ym, xx, yx) {
     this.xmin = xm;
@@ -294,7 +302,8 @@ listShuffle = (list) => {
 };
 
 var points = new KdTree();
-const numBoids = 240;
+var shark;
+const numBoids = 180;
 const canvasSize = 500;
 var frameCount = 0;
 
@@ -304,11 +313,21 @@ initialize = () => {
       new Point(
         Math.random() * canvasSize * 2,
         Math.random() * canvasSize,
-        (Math.random() < 0.5 ? -1 : 1) * Math.random() * 4,
-        (Math.random() < 0.5 ? -1 : 1) * Math.random() * 4
+        (Math.random() < 0.5 ? -1 : 1) * Math.random() * 2,
+        (Math.random() < 0.5 ? -1 : 1) * Math.random() * 2
       )
     );
   }
+
+  shark = new AccPoint(
+    Math.random() * canvasSize * 2,
+    Math.random() * canvasSize,
+    (Math.random() < 0.5 ? -1 : 1) * Math.random() * 3,
+    (Math.random() < 0.5 ? -1 : 1) * Math.random() * 3,
+    0,
+    0
+  );
+
   draw();
 
   // ctx.fillStyle = "rgb(0, 0, 200, 0.5)";
@@ -319,27 +338,103 @@ initialize = () => {
 draw = () => {
   let canvas = document.getElementById("map");
   let ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  //ctx.clearRect(0, 0, canvas.width, canvas.height);
   let pointList = points.asList();
   for (let p of pointList) {
-    drawBoid(ctx, p);
+    //drawBoid(ctx, p);
   }
+
+  drawShark(ctx, shark);
 };
 
 drawBoid = (ctx, p) => {
+  // Draw body
+  ctx.beginPath();
+  ctx.lineWidth = "8";
+  ctx.strokeStyle = "#ffa845";
+  let l = Math.hypot(p.xv, p.yv);
+  let uxv = p.xv / l;
+  let uyv = p.yv / l;
+  ctx.moveTo(p.x + 6 * uxv, p.y + 6 * uyv);
+  ctx.lineTo(p.x + uxv * 16, p.y + uyv * 16);
+  ctx.stroke();
+
+  // Draw tail
+  ctx.beginPath();
+  ctx.lineWidth = "3";
+  ctx.moveTo(p.x, p.y);
+  ctx.lineTo(p.x + uxv * 6, p.y + uyv * 6);
+  ctx.stroke();
+
+  // Draw flipper
+  ctx.beginPath();
+  ctx.lineWidth = "1";
+  ctx.strokeStyle = "#1a1a1a";
+  let a = 1;
+  let b = (-1 * p.xv) / p.yv;
+  l = Math.hypot(a, b) / 5;
+  ctx.moveTo(p.x - a / l, p.y - b / l);
+  ctx.lineTo(p.x + a / l, p.y + b / l);
+  ctx.stroke();
+};
+
+drawShark = (ctx, p) => {
+  // Draw body
+  ctx.beginPath();
+  ctx.lineWidth = "12";
+  ctx.strokeStyle = "#6a6d9c";
+  let l = Math.hypot(p.xv, p.yv);
+  let uxv = p.xv / l;
+  let uyv = p.yv / l;
+  ctx.moveTo(p.x + 8 * uxv, p.y + 8 * uyv);
+  ctx.lineTo(p.x + uxv * 32, p.y + uyv * 32);
+  ctx.stroke();
+
+  // Calculate vperp
+  let a = 1;
+  let b = (-1 * p.xv) / p.yv;
+  l = Math.hypot(a, b) / 6;
+
+  // Draw head
+  ctx.beginPath();
+  ctx.lineWidth = "16";
+  ctx.moveTo(p.x + 31 * uxv, p.y + 31 * uyv);
+  ctx.lineTo(p.x + uxv * 36, p.y + uyv * 36);
+  ctx.stroke();
+
+  // Draw Fins
+  ctx.beginPath();
+  ctx.lineWidth = "4";
+  ctx.moveTo(p.x + 24 * uxv, p.y + 24 * uyv);
+  ctx.lineTo(p.x + 20 * uxv + (2 * a) / l, p.y + 20 * uyv + (2 * b) / l);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.lineWidth = "4";
+  ctx.moveTo(p.x + 24 * uxv, p.y + 24 * uyv);
+  ctx.lineTo(p.x + 20 * uxv - (2 * a) / l, p.y + 20 * uyv - (2 * b) / l);
+  ctx.stroke();
+
+  // Draw tail
+  ctx.beginPath();
+  //ctx.lineWidth = "4";
+  ctx.moveTo(p.x, p.y);
+  ctx.lineTo(p.x + uxv * 8, p.y + uyv * 8);
+  ctx.stroke();
+
+  // Draw flipper
   ctx.beginPath();
   ctx.lineWidth = "2";
-  ctx.strokeStyle = "#182e59";
-  ctx.moveTo(p.x, p.y);
-  let l = Math.hypot(p.xv, p.yv) / 5;
-  ctx.lineTo(p.x + p.xv / l, p.y + p.yv / l);
+  ctx.strokeStyle = "#1e1f26";
+  ctx.moveTo(p.x - a / l, p.y - b / l);
+  ctx.lineTo(p.x + a / l, p.y + b / l);
   ctx.stroke();
 };
 
 separation = (boid) => {
   let sep = new Point(0, 0, 0, 0);
-
-  nearby = points.circleRange(new Circle(boid.x, boid.y, 25));
+  let circ = new Circle(boid.x, boid.y, 25);
+  nearby = points.circleRange(circ);
   for (let other of nearby) {
     if (other !== boid) {
       let dist =
@@ -356,6 +451,16 @@ separation = (boid) => {
     sep.x = sep.x / hyp - boid.xv;
     sep.y = sep.y / hyp - boid.yv;
   }
+
+  circ = new Circle(boid.x, boid.y, 100);
+  if (circ.contains(shark)) {
+    let dist =
+      (shark.x - boid.x) * (shark.x - boid.x) +
+      (shark.y - boid.y) * (shark.y - boid.y);
+    sep.x = sep.x + (40 * (boid.x - shark.x)) / dist;
+    sep.y = sep.y + (40 * (boid.y - shark.y)) / dist;
+  }
+
   return sep;
 };
 
@@ -411,17 +516,19 @@ updateBoids = () => {
     sep = separation(boid);
     //sep = new Point(0, 0, 0, 0);
 
-    boid.xv = boid.xv + sep.x / 10 + align.x / 2 + coh.x / 80;
-    boid.yv = boid.yv + sep.y / 10 + align.y / 2 + coh.y / 80;
+    boid.xv = boid.xv + sep.x / 18 + align.x / 24 + coh.x / 240;
+    boid.yv = boid.yv + sep.y / 18 + align.y / 24 + coh.y / 240;
 
     boid.x = boid.x + boid.xv * 3;
     boid.y = boid.y + boid.yv * 3;
 
-    if (boid.x < 0) boid.xv += 0.2;
-    if (boid.x > canvasSize * 2) boid.xv -= 0.2;
-    if (boid.y < 0) boid.yv += 0.2;
-    if (boid.y > canvasSize) boid.yv -= 0.2;
+    if (boid.x < 0) boid.xv += 0.1;
+    if (boid.x > canvasSize * 2) boid.xv -= 0.1;
+    if (boid.y < 0) boid.yv += 0.1;
+    if (boid.y > canvasSize) boid.yv -= 0.1;
   }
+
+  updateShark();
 
   if (frameCount % 2 === 0) {
     listShuffle(pointList);
@@ -432,6 +539,29 @@ updateBoids = () => {
   }
 
   frameCount++;
+};
+
+updateShark = () => {
+  shark.x = shark.x + shark.xv;
+  shark.y = shark.y + shark.yv;
+
+  if (shark.xv < -2) shark.xa += 0.005;
+  if (shark.xv > 2) shark.xa -= 0.005;
+  if (shark.yv < -2) shark.ya += 0.005;
+  if (shark.yv > 2) shark.ya -= 0.005;
+
+  if (shark.x < 0) shark.xa = 0.05;
+  if (shark.x > canvasSize * 2) shark.xa = -0.05;
+  if (shark.y < 0) shark.ya = 0.05;
+  if (shark.y > canvasSize) shark.ya = -0.05;
+
+  shark.xv += shark.xa / 4;
+  shark.yv += shark.ya / 4;
+
+  if (frameCount % 10 == 0) {
+    shark.xa += ((Math.random() < 0.5 ? -1 : 1) * Math.random()) / 100;
+    shark.ya += ((Math.random() < 0.5 ? -1 : 1) * Math.random()) / 100;
+  }
 };
 
 (function () {
