@@ -301,11 +301,13 @@ listShuffle = (list) => {
   }
 };
 
-var points = new KdTree();
-var shark;
 const numBoids = 180;
 const canvasSize = 500;
 var frameCount = 0;
+
+var points = new KdTree();
+var shark;
+var bubbles = [];
 
 initialize = () => {
   for (let x = 0; x < numBoids; x++) {
@@ -328,6 +330,17 @@ initialize = () => {
     0
   );
 
+  for (let x = 0; x < 50; x++) {
+    bubbles.push(
+      new Point(
+        Math.random() * canvasSize * 2,
+        canvasSize,
+        0,
+        -1 * Math.random() * 2
+      )
+    );
+  }
+
   draw();
 
   // ctx.fillStyle = "rgb(0, 0, 200, 0.5)";
@@ -338,13 +351,17 @@ initialize = () => {
 draw = () => {
   let canvas = document.getElementById("map");
   let ctx = canvas.getContext("2d");
-  //ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   let pointList = points.asList();
   for (let p of pointList) {
-    //drawBoid(ctx, p);
+    drawBoid(ctx, p);
   }
 
   drawShark(ctx, shark);
+
+  for (let b of bubbles) {
+    drawBubble(ctx, b);
+  }
 };
 
 drawBoid = (ctx, p) => {
@@ -431,6 +448,14 @@ drawShark = (ctx, p) => {
   ctx.stroke();
 };
 
+drawBubble = (ctx, b) => {
+  ctx.beginPath();
+  ctx.arc(b.x, b.y, 4, 0, 2 * Math.PI, false);
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#ffffff";
+  ctx.stroke();
+};
+
 separation = (boid) => {
   let sep = new Point(0, 0, 0, 0);
   let circ = new Circle(boid.x, boid.y, 25);
@@ -505,6 +530,12 @@ cohesion = (boid) => {
   return coh;
 };
 
+update = () => {
+  updateBoids();
+  updateShark();
+  updateBubbles();
+};
+
 updateBoids = () => {
   let sep, align, coh;
   let pointList = points.asList();
@@ -528,8 +559,6 @@ updateBoids = () => {
     if (boid.y > canvasSize) boid.yv -= 0.1;
   }
 
-  updateShark();
-
   if (frameCount % 2 === 0) {
     listShuffle(pointList);
     points = new KdTree();
@@ -545,18 +574,18 @@ updateShark = () => {
   shark.x = shark.x + shark.xv;
   shark.y = shark.y + shark.yv;
 
-  if (shark.xv < -2) shark.xa += 0.005;
-  if (shark.xv > 2) shark.xa -= 0.005;
-  if (shark.yv < -2) shark.ya += 0.005;
-  if (shark.yv > 2) shark.ya -= 0.005;
+  if (shark.xv < -2.5) shark.xa += 0.005;
+  if (shark.xv > 2.5) shark.xa -= 0.005;
+  if (shark.yv < -2.5) shark.ya += 0.005;
+  if (shark.yv > 2.5) shark.ya -= 0.005;
 
-  if (shark.x < 0) shark.xa = 0.05;
-  if (shark.x > canvasSize * 2) shark.xa = -0.05;
-  if (shark.y < 0) shark.ya = 0.05;
-  if (shark.y > canvasSize) shark.ya = -0.05;
+  if (shark.x < 0) shark.xa = 0.055;
+  if (shark.x > canvasSize * 2) shark.xa = -0.055;
+  if (shark.y < 0) shark.ya = 0.055;
+  if (shark.y > canvasSize) shark.ya = -0.055;
 
-  shark.xv += shark.xa / 4;
-  shark.yv += shark.ya / 4;
+  shark.xv += shark.xa / 5;
+  shark.yv += shark.ya / 5;
 
   if (frameCount % 10 == 0) {
     shark.xa += ((Math.random() < 0.5 ? -1 : 1) * Math.random()) / 100;
@@ -564,11 +593,21 @@ updateShark = () => {
   }
 };
 
+updateBubbles = () => {
+  for (let bubble of bubbles) {
+    bubble.y += bubble.yv;
+    bubble.yv -= 0.005;
+    if (bubble.y > canvasSize) {
+      bubbles.shift();
+    }
+  }
+};
+
 (function () {
   function main() {
     window.requestAnimationFrame(main);
+    update();
     draw();
-    updateBoids();
   }
   main();
 })();
