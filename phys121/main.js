@@ -90,7 +90,7 @@ function init() {
     frictionAir: 0,
     friction: 1,
     frictionStatic: 1,
-    restitution: 0.0,
+    restitution: 0.4,
     density: 1,
     render: {
       fillStyle: "#2650ed",
@@ -109,7 +109,7 @@ function init() {
 
   Matter.Events.on(ball, "sleepEnd", function (event) {
     var body = this;
-    console.log("body id", body.id, "sleeping:", body.isSleeping);
+    //console.log("body id", body.id, "sleeping:", body.isSleeping);
     antifriction(100000);
   });
 
@@ -146,7 +146,7 @@ function init() {
           cur_frame = n;
         }
 
-        console.log(ball.angularVelocity);
+        //console.log(ball.angularVelocity);
 
         setTimeout(animate, 50);
       } else {
@@ -174,6 +174,24 @@ function init() {
     });
 
   World.add(world, mouseConstraint);
+
+  Matter.Events.on(mouseConstraint, "mousedown", function (event) {
+    //event.
+    var newCircle = Bodies.circle(mouse.position.x, mouse.position.y, rad, {
+      frictionAir: 0,
+      friction: 1,
+      frictionStatic: 1,
+      restitution: 0.4,
+      density: 1,
+      render: {
+        fillStyle: "#2650ed",
+        strokeStyle: "#0f2a91",
+        lineWidth: 1,
+        showAngleIndicator: true,
+      },
+    });
+    World.add(world, newCircle);
+  });
 
   // keep the mouse in sync with rendering
   render.mouse = mouse;
