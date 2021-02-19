@@ -1,5 +1,7 @@
 window.addEventListener("load", init);
 
+let onClick;
+
 function init() {
   // module aliases
   var Engine = Matter.Engine,
@@ -28,8 +30,8 @@ function init() {
       height: 600,
       pixelRatio: 1,
       background: "#b5a28a",
-      //wireframeBackground: "#b5a28a",
-      //showAngleIndicator: true,
+      wireframes: false,
+      showAngleIndicator: true,
     },
   });
 
@@ -68,8 +70,8 @@ function init() {
       frictionStatic: 1,
       isStatic: true,
       render: {
-        fillStyle: "#2650ed",
-        strokeStyle: "#0f2a91",
+        fillStyle: "#242424",
+        strokeStyle: "#242424",
         lineWidth: 1,
         showAngleIndicator: false,
       },
@@ -90,13 +92,12 @@ function init() {
     frictionAir: 0,
     friction: 1,
     frictionStatic: 1,
-    restitution: 0.4,
+    restitution: 0.2,
     density: 1,
     render: {
-      fillStyle: "#2650ed",
+      fillStyle: "#778de0",
       strokeStyle: "#0f2a91",
-      lineWidth: 1,
-      showAngleIndicator: true,
+      lineWidth: 2,
     },
   };
 
@@ -166,7 +167,7 @@ function init() {
     mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
       constraint: {
-        stiffness: 0.2,
+        stiffness: 0.5,
         render: {
           visible: false,
         },
@@ -175,23 +176,23 @@ function init() {
 
   World.add(world, mouseConstraint);
 
-  Matter.Events.on(mouseConstraint, "mousedown", function (event) {
-    //event.
-    var newCircle = Bodies.circle(mouse.position.x, mouse.position.y, rad, {
+  onClick = function (e) {
+    var bodyOptions = {
       frictionAir: 0,
-      friction: 1,
-      frictionStatic: 1,
-      restitution: 0.4,
+      friction: 0,
+      frictionStatic: 0,
+      restitution: 0.2,
       density: 1,
       render: {
-        fillStyle: "#2650ed",
+        fillStyle: "#778de0",
         strokeStyle: "#0f2a91",
-        lineWidth: 1,
-        showAngleIndicator: true,
+        lineWidth: 2,
       },
-    });
-    World.add(world, newCircle);
-  });
+    };
+
+    var ball = Bodies.circle(60, 300, rad, bodyOptions);
+    World.add(world, ball);
+  };
 
   // keep the mouse in sync with rendering
   render.mouse = mouse;
