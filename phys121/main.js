@@ -23,7 +23,7 @@ function init() {
 
   // create a renderer
   var render = Render.create({
-    element: document.querySelector("body"),
+    element: document.getElementById("canvas-holder"),
     engine: engine,
     options: {
       width: 1000,
