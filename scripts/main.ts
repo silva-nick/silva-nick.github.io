@@ -1,3 +1,4 @@
+// Point and shape classes
 class Point {
   x: number;
   y: number;
@@ -60,24 +61,25 @@ class Circle {
     this.r = r;
   }
   contains(p: Point): boolean {
-    return Math.hypot(this.x - p.x, this.y - p.y) <= this.r;
+    return hypot(this.x - p.x, this.y - p.y) <= this.r;
   }
 }
 
-class Node {
+class TreeNode {
   point: Point;
-  lb: Node | null;
-  rb: Node | null;
+  lb: TreeNode | null;
+  rb: TreeNode | null;
 
-  constructor(p: Point, l: Node | null, r: Node | null) {
+  constructor(p: Point, l: TreeNode | null, r: TreeNode | null) {
     this.point = p;
     this.lb = l;
     this.rb = r;
   }
 }
 
+// KD Tree Data Structure
 class KdTree {
-  root: Node | null;
+  root: TreeNode | null;
   n: number;
 
   constructor() {
@@ -102,19 +104,19 @@ class KdTree {
     return list;
   }
 
-  partialList(node: Node | null, list: Array<Point>) {
-    if (node == null) return;
+  partialList(TreeNode: TreeNode | null, list: Array<Point>) {
+    if (TreeNode == null) return;
     else {
-      list.push(node.point);
-      this.partialList(node.lb, list);
-      this.partialList(node.rb, list);
+      list.push(TreeNode.point);
+      this.partialList(TreeNode.lb, list);
+      this.partialList(TreeNode.rb, list);
     }
   }
 
   insert(p: Point) {
     if (p == null) throw new TypeError();
     if (this.root == null) {
-      this.root = new Node(p, null, null);
+      this.root = new TreeNode(p, null, null);
       this.n++;
       return;
     }
@@ -128,7 +130,7 @@ class KdTree {
           if (next.lb != null) {
             next = next.lb;
           } else {
-            next.lb = new Node(p, null, null);
+            next.lb = new TreeNode(p, null, null);
             this.n++;
             return;
           }
@@ -136,7 +138,7 @@ class KdTree {
           if (next.rb != null) {
             next = next.rb;
           } else {
-            next.rb = new Node(p, null, null);
+            next.rb = new TreeNode(p, null, null);
             this.n++;
             return;
           }
@@ -147,7 +149,7 @@ class KdTree {
           if (next.lb != null) {
             next = next.lb;
           } else {
-            next.lb = new Node(p, null, null);
+            next.lb = new TreeNode(p, null, null);
             this.n++;
             return;
           }
@@ -155,7 +157,7 @@ class KdTree {
           if (next.rb != null) {
             next = next.rb;
           } else {
-            next.rb = new Node(p, null, null);
+            next.rb = new TreeNode(p, null, null);
             this.n++;
             return;
           }
@@ -197,7 +199,7 @@ class KdTree {
     return queue;
   }
 
-  hFindPoints(rect: Rect, n: Node, queue: Array<Point>) {
+  hFindPoints(rect: Rect, n: TreeNode, queue: Array<Point>) {
     if (rect.contains(n.point)) {
       queue.push(n.point);
     }
@@ -209,7 +211,7 @@ class KdTree {
     }
   }
 
-  vFindPoints(rect: Rect, n: Node, queue: Array<Point>) {
+  vFindPoints(rect: Rect, n: TreeNode, queue: Array<Point>) {
     if (rect.contains(n.point)) {
       queue.push(n.point);
     }
@@ -229,7 +231,7 @@ class KdTree {
     return queue;
   }
 
-  hRadiusPoints(circle: Circle, n: Node, queue: Array<Point>) {
+  hRadiusPoints(circle: Circle, n: TreeNode, queue: Array<Point>) {
     if (circle.contains(n.point)) {
       queue.push(n.point);
     }
@@ -241,7 +243,7 @@ class KdTree {
     }
   }
 
-  vRadiusPoints(circle: Circle, n: Node, queue: Array<Point>) {
+  vRadiusPoints(circle: Circle, n: TreeNode, queue: Array<Point>) {
     if (circle.contains(n.point)) {
       queue.push(n.point);
     }
@@ -260,7 +262,7 @@ class KdTree {
     return this.hCloser(closest, p);
   }
 
-  hCloser(n: Node, p: Point) {
+  hCloser(n: TreeNode, p: Point) {
     let dist = KdTree.distance(n.point, p);
     let temp = n.point;
     let min = n.point;
@@ -288,7 +290,7 @@ class KdTree {
       return dist < KdTree.distance(temp, p) ? min : temp;
     }
   }
-  vCloser(n: Node, p: Point) {
+  vCloser(n: TreeNode, p: Point) {
     let dist = KdTree.distance(n.point, p);
     let temp = n.point;
     let min = n.point;
@@ -324,11 +326,18 @@ class KdTree {
   }
 }
 
+// Helper functions
 let listShuffle = (list: Array<any>) => {
   for (let i = list.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [list[i], list[j]] = [list[j], list[i]];
   }
+};
+
+let hypot = (...nums: number[]): number => {
+  let output = 0;
+  for (let num of nums) output += num * num;
+  return Math.sqrt(output);
 };
 
 const numBoids = 180;
@@ -401,7 +410,7 @@ let drawBoid = (ctx: CanvasRenderingContext2D, p: Point) => {
   ctx.beginPath();
   ctx.lineWidth = 8;
   ctx.strokeStyle = "#ffa845";
-  let l = Math.hypot(p.xv, p.yv);
+  let l = hypot(p.xv, p.yv);
   let uxv = p.xv / l;
   let uyv = p.yv / l;
   ctx.moveTo(p.x + 6 * uxv, p.y + 6 * uyv);
@@ -421,7 +430,7 @@ let drawBoid = (ctx: CanvasRenderingContext2D, p: Point) => {
   ctx.strokeStyle = "#1a1a1a";
   let a = 1;
   let b = (-1 * p.xv) / p.yv;
-  l = Math.hypot(a, b) / 5;
+  l = hypot(a, b) / 5;
   ctx.moveTo(p.x - a / l, p.y - b / l);
   ctx.lineTo(p.x + a / l, p.y + b / l);
   ctx.stroke();
@@ -432,7 +441,7 @@ let drawShark = (ctx: CanvasRenderingContext2D, p: Point) => {
   ctx.beginPath();
   ctx.lineWidth = 12;
   ctx.strokeStyle = "#6a6d9c";
-  let l = Math.hypot(p.xv, p.yv);
+  let l = hypot(p.xv, p.yv);
   let uxv = p.xv / l;
   let uyv = p.yv / l;
   ctx.moveTo(p.x + 8 * uxv, p.y + 8 * uyv);
@@ -442,7 +451,7 @@ let drawShark = (ctx: CanvasRenderingContext2D, p: Point) => {
   // Calculate vperp
   let a = 1;
   let b = (-1 * p.xv) / p.yv;
-  l = Math.hypot(a, b) / 6;
+  l = hypot(a, b) / 6;
 
   // Draw head
   ctx.beginPath();
@@ -505,7 +514,7 @@ let separation = (boid: Point) => {
     if (nearby.length - 1 > 0) {
       sep.x = sep.x / (nearby.length - 1);
       sep.y = sep.y / (nearby.length - 1);
-      let hyp = Math.hypot(sep.x, sep.y);
+      let hyp = hypot(sep.x, sep.y);
       sep.x = sep.x / hyp - boid.xv;
       sep.y = sep.y / hyp - boid.yv;
     }
@@ -535,7 +544,7 @@ let alignment = (boid: Point) => {
     if (nearby.length - 1 > 0) {
       align.x = align.x / (nearby.length - 1);
       align.y = align.y / (nearby.length - 1);
-      let hyp = Math.hypot(align.x, align.y);
+      let hyp = hypot(align.x, align.y);
       align.x = align.x / hyp - boid.xv;
       align.y = align.y / hyp - boid.yv;
     }
@@ -559,7 +568,7 @@ let cohesion = (boid: Point) => {
   if (n > 0) {
     coh.x = coh.x / n - boid.x;
     coh.y = coh.y / n - boid.y;
-    let hyp = Math.hypot(coh.x, coh.y);
+    let hyp = hypot(coh.x, coh.y);
     coh.x = coh.x / hyp - boid.xv;
     coh.y = coh.y / hyp - boid.yv;
   }
@@ -607,6 +616,7 @@ let updateBoids = () => {
 };
 
 let updateShark = () => {
+  if (!shark) return;
   shark.x = shark.x + shark.xv;
   shark.y = shark.y + shark.yv;
 
@@ -639,6 +649,7 @@ let updateBubbles = () => {
   }
 };
 
+// Main animation loop
 (function () {
   function main() {
     window.requestAnimationFrame(main);
@@ -647,5 +658,3 @@ let updateBubbles = () => {
   }
   main();
 })();
-
-export {};

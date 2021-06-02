@@ -1,10 +1,11 @@
 {
     "compilerOptions": {
       "target": "es5",
+      "noImplicitAny": true,
+      "strictNullChecks": true,
       "allowJs": true,
       "skipLibCheck": true,
       "esModuleInterop": true, 
-      "allowSyntheticDefaultImports": true,
       "strict": true, 
       "noEmit": true,
       "noUnusedLocals": true,
@@ -12,8 +13,7 @@
       "incremental": true, 
       "noFallthroughCasesInSwitch": true
     },
-    "include": [
-      "scripts/*" 
-    ],
-    "exclude": ["phys121"] 
+    "files":[
+      "./scripts/main.ts"
+    ]
 }
