@@ -2,9 +2,7 @@
   height: fit-content;
   width: fit-content;
 
-  position: absolute;
-  left: 25%;
-  top: 10%;
+  margin: 5rem auto;
 }
 canvas {
   background-color: #dfe6ff;

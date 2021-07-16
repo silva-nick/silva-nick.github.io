@@ -643,8 +643,10 @@ let updateBubbles = () => {
   for (let bubble of bubbles) {
     bubble.y += bubble.yv;
     bubble.yv -= 0.005;
-    if (bubble.y > canvasSize) {
-      bubbles.shift();
+    if (bubble.y < -5) {
+      bubble.y = canvasSize + 5;
+      bubble.yv = -1 * Math.random() * 2;
+      if (Math.random() < 0.2) bubbles.shift();
     }
   }
 };

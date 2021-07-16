@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -56,13 +57,13 @@ var Circle = /** @class */ (function () {
     };
     return Circle;
 }());
-var Node = /** @class */ (function () {
-    function Node(p, l, r) {
+var TreeNode = /** @class */ (function () {
+    function TreeNode(p, l, r) {
         this.point = p;
         this.lb = l;
         this.rb = r;
     }
-    return Node;
+    return TreeNode;
 }());
 // KD Tree Data Structure
 var KdTree = /** @class */ (function () {
@@ -85,20 +86,20 @@ var KdTree = /** @class */ (function () {
         this.partialList(this.root.lb, list);
         return list;
     };
-    KdTree.prototype.partialList = function (node, list) {
-        if (node == null)
+    KdTree.prototype.partialList = function (TreeNode, list) {
+        if (TreeNode == null)
             return;
         else {
-            list.push(node.point);
-            this.partialList(node.lb, list);
-            this.partialList(node.rb, list);
+            list.push(TreeNode.point);
+            this.partialList(TreeNode.lb, list);
+            this.partialList(TreeNode.rb, list);
         }
     };
     KdTree.prototype.insert = function (p) {
         if (p == null)
             throw new TypeError();
         if (this.root == null) {
-            this.root = new Node(p, null, null);
+            this.root = new TreeNode(p, null, null);
             this.n++;
             return;
         }
@@ -114,7 +115,7 @@ var KdTree = /** @class */ (function () {
                         next = next.lb;
                     }
                     else {
-                        next.lb = new Node(p, null, null);
+                        next.lb = new TreeNode(p, null, null);
                         this.n++;
                         return;
                     }
@@ -124,7 +125,7 @@ var KdTree = /** @class */ (function () {
                         next = next.rb;
                     }
                     else {
-                        next.rb = new Node(p, null, null);
+                        next.rb = new TreeNode(p, null, null);
                         this.n++;
                         return;
                     }
@@ -137,7 +138,7 @@ var KdTree = /** @class */ (function () {
                         next = next.lb;
                     }
                     else {
-                        next.lb = new Node(p, null, null);
+                        next.lb = new TreeNode(p, null, null);
                         this.n++;
                         return;
                     }
@@ -147,7 +148,7 @@ var KdTree = /** @class */ (function () {
                         next = next.rb;
                     }
                     else {
-                        next.rb = new Node(p, null, null);
+                        next.rb = new TreeNode(p, null, null);
                         this.n++;
                         return;
                     }
@@ -612,8 +613,11 @@ var updateBubbles = function () {
         var bubble = bubbles_2[_i];
         bubble.y += bubble.yv;
         bubble.yv -= 0.005;
-        if (bubble.y > canvasSize) {
-            bubbles.shift();
+        if (bubble.y < -5) {
+            bubble.y = canvasSize + 5;
+            bubble.yv = -1 * Math.random() * 2;
+            if (Math.random() < 0.2)
+                bubbles.shift();
         }
     }
 };

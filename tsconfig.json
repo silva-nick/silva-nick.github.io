@@ -1,19 +1,17 @@
 {
-    "compilerOptions": {
-      "target": "es5",
-      "noImplicitAny": true,
-      "strictNullChecks": true,
-      "allowJs": true,
-      "skipLibCheck": true,
-      "esModuleInterop": true, 
-      "strict": true, 
-      "noEmit": true,
-      "noUnusedLocals": true,
-      "noUnusedParameters": true,
-      "incremental": true, 
-      "noFallthroughCasesInSwitch": true
-    },
-    "files":[
-      "./scripts/main.ts"
-    ]
+  "compilerOptions": {
+    "target": "es5",
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "noEmit": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "incremental": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "files": ["./scripts/main.ts"]
 }
