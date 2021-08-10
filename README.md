@@ -2,9 +2,10 @@
 
 / → [Foids](https://www.red3d.com/cwr/boids/)
 
-/woahh → Three.js
+/portfolio → My personal portfolio
+
+/woahh → Three.js experiment
 
 /phys121 → My physics final
 
 /bees → My first ever website
-
